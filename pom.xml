@@ -11,6 +11,7 @@
     <modules>
         <module>user_module</module>
         <module>share_module</module>
+        <module>question_love_module</module>
     </modules>
 
     <parent>

@@ -24,7 +24,4 @@ public class DataSourceConfig {
         return new HikariConfig();
     }
 
-
-
-
 }

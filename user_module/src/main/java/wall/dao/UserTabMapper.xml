@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wall.dao.UserTabMapper">
+
+  <resultMap id="BaseResultMap" type="wall.pojo.UserTabVo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="wx_name" jdbcType="VARCHAR" property="wxName" />
+    <result column="oppen_id" jdbcType="VARCHAR" property="oppenId" />
+    <result column="sex" jdbcType="VARCHAR" property="sex" />
+    <result column="identity" jdbcType="TINYINT" property="identity" />
+    <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+    <result column="join_time" jdbcType="INTEGER" property="joinTime" />
+    <result column="is_vip" jdbcType="BIT" property="isVip" />
+    <result column="wx_num" jdbcType="VARCHAR" property="wxNum" />
+    <result column="vo_join_time" jdbcType="VARCHAR" property="vo_join_time" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, wx_name, oppen_id, sex, identity, school_id, join_time, is_vip, wx_num
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, wx_name, oppen_id, sex, identity, school_id, FROM_UNIXTIME(join_time) as vo_join_time,is_vip, wx_num
+    from user_tab
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <insert id="insertSelective" parameterType="wall.pojo.UserTabVo">
+    insert into user_tab
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="wxName != null">
+        wx_name,
+      </if>
+      <if test="oppenId != null">
+        oppen_id,
+      </if>
+      <if test="sex != null">
+        sex,
+      </if>
+      <if test="identity != null">
+        identity,
+      </if>
+      <if test="schoolId != null">
+        school_id,
+      </if>
+      <if test="vo_join_time != null">
+        join_time,
+      </if>
+      <if test="isVip != null">
+        is_vip,
+      </if>
+      <if test="wxNum != null">
+        wx_num,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="wxName != null">
+        #{wxName,jdbcType=VARCHAR},
+      </if>
+      <if test="oppenId != null">
+        #{oppenId,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="identity != null">
+        #{identity,jdbcType=TINYINT},
+      </if>
+      <if test="schoolId != null">
+        #{schoolId,jdbcType=INTEGER},
+      </if>
+      <if test="vo_join_time != null">
+        UNIX_TIMESTAMP(#{vo_join_time,jdbcType=INTEGER}),
+      </if>
+      <if test="isVip != null">
+        #{isVip,jdbcType=BIT},
+      </if>
+      <if test="wxNum != null">
+        #{wxNum,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="wall.pojo.UserTabVo">
+    update user_tab
+    <set>
+      <if test="wxName != null">
+        wx_name = #{wxName,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        sex = #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="identity != null">
+        identity = #{identity,jdbcType=TINYINT},
+      </if>
+      <if test="schoolId != null">
+        school_id = #{schoolId,jdbcType=INTEGER},
+      </if>
+      <if test="wxNum != null">
+        wx_num = #{wxNum,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectUserTabByOppen_id" parameterType="string" resultMap="BaseResultMap">
+    select id, wx_name, oppen_id, sex, identity, school_id, FROM_UNIXTIME(join_time) as vo_join_time,is_vip, wx_num
+    from user_tab where oppen_id = #{oppen_id}
+  </select>
+
+</mapper>
