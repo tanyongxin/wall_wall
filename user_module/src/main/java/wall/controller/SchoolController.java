@@ -12,13 +12,12 @@ import wall.service.SchoolService;
 import wall.util.Res;
 import wall.util.StateCode;
 
-@RestController
+@RestController("/school")
 public class SchoolController {
 
 
     @Autowired
     private SchoolService schoolService;
-
 
     @ApiOperation(value = "添加学校信息接口", httpMethod = "POST", response = ResponseEntity.class)
     @ApiImplicitParams({

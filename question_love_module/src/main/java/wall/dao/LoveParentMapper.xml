@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wall.dao.LoveParentMapper">
+
+  <resultMap id="BaseResultMap" type="wall.pojo.LoveParentVo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="time" jdbcType="INTEGER" property="time" />
+    <result column="topic_id" jdbcType="BIGINT" property="topicId" />
+    <result column="to_person" jdbcType="CHAR" property="toPerson" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="is_anonymous" jdbcType="BIT" property="isAnonymous" />
+    <result column="is_valid" jdbcType="BIT" property="isValid" />
+    <result column="is_audit" jdbcType="TINYINT" property="isAudit" />
+    <result column="vo_time" jdbcType="VARCHAR" property="vo_time" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit
+  </sql>
+
+  <!--<sql id="ext_Column_List">-->
+    <!--id, time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit-->
+  <!--</sql>-->
+
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    id, FROM_UNIXTIME(time) as vo_time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit
+    from love_parent
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+
+  <insert id="insertSelective" parameterType="wall.pojo.LoveParentVo">
+    insert into love_parent
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="vo_time != null">
+        time,
+      </if>
+      <if test="topicId != null">
+        topic_id,
+      </if>
+      <if test="toPerson != null">
+        to_person,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="isAnonymous != null">
+        is_anonymous,
+      </if>
+      <if test="isValid != null">
+        is_valid,
+      </if>
+      <if test="isAudit != null">
+        is_audit,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="vo_time != null">
+        UNIX_TIMESTAMP(#{vo_time,jdbcType=INTEGER}),
+      </if>
+      <if test="topicId != null">
+        #{topicId,jdbcType=BIGINT},
+      </if>
+      <if test="toPerson != null">
+        #{toPerson,jdbcType=CHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="isAnonymous != null">
+        #{isAnonymous,jdbcType=BIT},
+      </if>
+      <if test="isValid != null">
+        #{isValid,jdbcType=BIT},
+      </if>
+      <if test="isAudit != null">
+        #{isAudit,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectByUserId" parameterType="wall.entity.Pageable" resultMap="BaseResultMap">
+    select id, FROM_UNIXTIME(time) as vo_time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit
+    from love_parent where
+     <if test="parentVoPageable.lastId != null">
+        id > #{parentVoPageable.lastId} and
+     </if>
+     user_id = #{parentVoPageable.entity.userId} and is_valid = 1 and is_audit = 2 limit #{parentVoPageable.from},#{parentVoPageable.pageSize}
+  </select>
+
+
+  <update id="updateByPrimaryKeySelective" parameterType="wall.pojo.LoveParentVo">
+    update love_parent
+    <set>
+      <if test="isValid != null">
+        is_valid = #{isValid,jdbcType=BIT},
+      </if>
+      <if test="isAudit != null">
+        is_audit = #{isAudit,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByLoveParentVo" parameterType="wall.entity.Pageable" resultMap="BaseResultMap">
+    select id, time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit
+    from love_parent where
+    <if test="parentVoPageable.lastId != null">
+      id > #{parentVoPageable.lastId} and
+    </if>
+    <if test="parentVoPageable.entity.start_time != null &amp; parentVoPageable.entity.end_time != null">
+      time between UNIX_TIMESTAMP(#{parentVoPageable.entity.start_time}) and UNIX_TIMESTAMP(#{parentVoPageable.entity.end_time}) and
+    </if>
+    <if test="parentVoPageable.entity.topic_id != null">
+      topic_id = #{parentVoPageable.entity.topic_id} and
+    </if>
+    is_valid = 1 and is_audit = 2 limit #{parentVoPageable.from},#{parentVoPageable.pageSize}
+  </select>
+
+</mapper>
