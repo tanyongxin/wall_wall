@@ -69,7 +69,7 @@
   </insert>
 
 
-  <select id="selectByParentId" parameterType="int" resultMap="BaseResultMap">
+  <select id="selectByParentId" parameterType="long" resultMap="BaseResultMap">
     select id, image, parent_id, type,content from love_sub where parent_id = #{parentId}
   </select>
 

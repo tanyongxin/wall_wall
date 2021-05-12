@@ -26,7 +26,7 @@ public class Pageable<T> {
         return this;
     }
 
-    public long getLastId() {
+    public Long getLastId() {
         return lastId;
     }
 

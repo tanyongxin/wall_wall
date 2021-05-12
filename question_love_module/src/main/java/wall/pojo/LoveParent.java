@@ -1,5 +1,7 @@
 package wall.pojo;
 
+import wall.entity.Pageable;
+
 // 表白的主表
 public class LoveParent {
 

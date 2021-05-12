@@ -15,4 +15,5 @@ public interface UserTabMapper {
 
     UserTabVo selectUserTabByOppen_id(String oppen_id);
 
+    String selectUserNameById(Long id);
 }

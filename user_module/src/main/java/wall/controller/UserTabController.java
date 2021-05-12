@@ -48,11 +48,22 @@ public class UserTabController {
     @ApiOperation(value = "根据id查找用户信息", httpMethod = "GET", response = ResponseEntity.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "用户id",
-                    required = true, dataType = "int")
+                    required = true, dataType = "long")
     })
     @RequestMapping(value = "/selectUserById/{id}",method = RequestMethod.GET)
     public Res<?> ordinaryAopSelectUserById(@PathVariable("id") Long id){
         return new Res<>(StateCode.OPERATION_SUCCEED,userTabService.selectUserById(id));
+    }
+
+
+    @ApiOperation(value = "根据id查找用户名", httpMethod = "GET", response = ResponseEntity.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "用户id",
+                    required = true, dataType = "long")
+    })
+    @RequestMapping(value = "/selectUserNameById/{id}",method = RequestMethod.GET)
+    public Res<?> ordinaryAopSelectUserNameById(@PathVariable("id") Long id){
+        return new Res<>(StateCode.OPERATION_SUCCEED,userTabService.selectUserNameById(id));
     }
 
 

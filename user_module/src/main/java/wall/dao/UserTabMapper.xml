@@ -114,4 +114,8 @@
     from user_tab where oppen_id = #{oppen_id}
   </select>
 
+  <select id="selectUserNameById" parameterType="long" resultType="string">
+    select wx_name from user_tab where id = #{id}
+  </select>
+
 </mapper>

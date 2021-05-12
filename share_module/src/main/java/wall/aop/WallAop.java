@@ -66,10 +66,10 @@ public class WallAop {
             if (joinPoint.getArgs()[i] instanceof BindingResult)
                 bindingResult = (BindingResult) joinPoint.getArgs()[i];
         }
-        if ( session_key == null )
-            return new Res<>(StateCode.NOTLOGGEDIN);
-        if (redisTemplate.opsForValue().get(session_key) == null)
-            return new Res<>(StateCode.TOKENEXPIRE);
+//        if ( session_key == null )
+//            return new Res<>(StateCode.NOTLOGGEDIN);
+//        if (redisTemplate.opsForValue().get(session_key) == null)
+//            return new Res<>(StateCode.TOKENEXPIRE);
         if (bindingResult != null && bindingResult.hasErrors())
             return new Res<>(StateCode.INVALIDPARAMETER);
         logger.info(" 调用 " + methodInvocationProceedingJoinPoint.getSignature().getName());

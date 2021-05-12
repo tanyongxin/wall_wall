@@ -12,8 +12,7 @@ public interface LoveService {
 
     int addLove(LoveParentVo loveParentVo, List<LoveSub> loveSubList);
 
+//    Pageable<LoveParentVo> selectByUserId(Pageable<LoveParentVo> parentVoPageable);
 
-    Pageable<LoveParentVo> selectByUserId(Pageable<LoveParentVo> parentVoPageable);
-
-    Pageable<LoveParentVo> selectList(Pageable<LoveParentVo> parentVoPageable);
+    Pageable<LoveParentVo> selectList(Pageable<LoveParentVo> pageable);
 }

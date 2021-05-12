@@ -10,6 +10,18 @@ public class LoveParentVo extends LoveParent {
     private String start_time; // 开始时间，用于封装查询条件
     private String end_time; // 结束时间，用于封装查询条件
 
+    private String topicName; // 所属话题的名称
+
+
+    public String getTopicName() {
+        return topicName;
+    }
+
+    public LoveParentVo setTopicName(String topicName) {
+        this.topicName = topicName;
+        return this;
+    }
+
     public String getStart_time() {
         return start_time;
     }
@@ -53,5 +65,17 @@ public class LoveParentVo extends LoveParent {
     public LoveParentVo setLoveSubs(List<LoveSub> loveSubs) {
         this.loveSubs = loveSubs;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        System.out.println(super.toString());
+        return "LoveParentVo{" +
+                "vo_time='" + vo_time + '\'' +
+                ", loveSubs=" + loveSubs +
+                ", userName='" + userName + '\'' +
+                ", start_time='" + start_time + '\'' +
+                ", end_time='" + end_time + '\'' +
+                '}';
     }
 }

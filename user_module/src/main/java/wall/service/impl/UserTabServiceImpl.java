@@ -91,4 +91,10 @@ public class UserTabServiceImpl implements UserTabService {
         return userTabMapper.selectByPrimaryKey(id);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public String selectUserNameById(Long id) {
+        return userTabMapper.selectUserNameById(id);
+    }
+
 }

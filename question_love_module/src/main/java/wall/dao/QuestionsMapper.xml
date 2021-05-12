@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wall.dao.QuestionsMapper">
+
+  <resultMap id="BaseResultMap" type="wall.pojo.QuestionsVo">
+
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="time" jdbcType="INTEGER" property="time" />
+    <result column="to_person" jdbcType="CHAR" property="toPerson" />
+    <result column="is_anonymous" jdbcType="BIT" property="isAnonymous" />
+    <result column="is_valid" jdbcType="BIT" property="isValid" />
+    <result column="is_audit" jdbcType="TINYINT" property="isAudit" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="background_type" jdbcType="TINYINT" property="backgroundType" />
+    <result column="background_value" jdbcType="VARCHAR" property="backgroundValue" />
+    <result column="question_background" jdbcType="VARCHAR" property="questionBackground" />
+    <result column="question_color" jdbcType="VARCHAR" property="questionColor" />
+    <result column="question_opacity" jdbcType="VARCHAR" property="questionOpacity" />
+    <result column="topic_id" jdbcType="BIGINT" property="topicId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="vo_time" jdbcType="VARCHAR" property="vo_time" />
+
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, user_id, time, to_person, is_anonymous, is_valid, is_audit, content, background_type, 
+    background_value, question_background, question_color, question_opacity, topic_id, 
+    title
+  </sql>
+
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    id, user_id, FROM_UNIXTIME(time) as vo_time, to_person, is_anonymous, is_valid, is_audit, content, background_type,
+    background_value, question_background, question_color, question_opacity, topic_id,
+    title
+    from questions
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <insert id="insertSelective" parameterType="wall.pojo.QuestionsVo">
+    insert into questions
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="vo_time != null">
+        time,
+      </if>
+      <if test="toPerson != null">
+        to_person,
+      </if>
+      <if test="isAnonymous != null">
+        is_anonymous,
+      </if>
+      <if test="isValid != null">
+        is_valid,
+      </if>
+      <if test="isAudit != null">
+        is_audit,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="backgroundType != null">
+        background_type,
+      </if>
+      <if test="backgroundValue != null">
+        background_value,
+      </if>
+      <if test="questionBackground != null">
+        question_background,
+      </if>
+      <if test="questionColor != null">
+        question_color,
+      </if>
+      <if test="questionOpacity != null">
+        question_opacity,
+      </if>
+      <if test="topicId != null">
+        topic_id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="vo_time != null">
+        UNIX_TIMESTAMP(#{vo_time}),
+      </if>
+      <if test="toPerson != null">
+        #{toPerson,jdbcType=CHAR},
+      </if>
+      <if test="isAnonymous != null">
+        #{isAnonymous,jdbcType=BIT},
+      </if>
+      <if test="isValid != null">
+        #{isValid,jdbcType=BIT},
+      </if>
+      <if test="isAudit != null">
+        #{isAudit,jdbcType=TINYINT},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="backgroundType != null">
+        #{backgroundType,jdbcType=TINYINT},
+      </if>
+      <if test="backgroundValue != null">
+        #{backgroundValue,jdbcType=VARCHAR},
+      </if>
+      <if test="questionBackground != null">
+        #{questionBackground,jdbcType=VARCHAR},
+      </if>
+      <if test="questionColor != null">
+        #{questionColor,jdbcType=VARCHAR},
+      </if>
+      <if test="questionOpacity != null">
+        #{questionOpacity,jdbcType=VARCHAR},
+      </if>
+      <if test="topicId != null">
+        #{topicId,jdbcType=BIGINT},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="wall.pojo.QuestionsVo">
+    update questions
+    <set>
+      <if test="isValid != null">
+        is_valid = #{isValid,jdbcType=BIT},
+      </if>
+
+      <if test="isAudit != null">
+        is_audit = #{isAudit,jdbcType=TINYINT},
+      </if>
+
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+  <select id="selectQuestionsVos" parameterType="wall.entity.Pageable" resultMap="BaseResultMap">
+      select
+    id, user_id, FROM_UNIXTIME(time) as vo_time, to_person, is_anonymous, is_valid, is_audit, content, background_type,
+    background_value, question_background, question_color, question_opacity, topic_id,
+    title
+    from questions where
+    <if test="lastId != null">
+      id > #{lastId} and
+    </if>
+    <if test="entity.topicId != null">
+      topic_id = #{entity.topicId} and
+    </if>
+    <if test="entity.start_time != null &amp; entity.end_time != null">
+      time between UNIX_TIMESTAMP(#{entity.start_time}) and UNIX_TIMESTAMP(#{entity.end_time}) and
+    </if>
+    <if test="entity.userId != null">
+      user_id = #{entity.userId} and
+    </if>
+    is_valid = 1 and is_audit = 2 limit #{from},#{pageSize}
+  </select>
+
+
+</mapper>

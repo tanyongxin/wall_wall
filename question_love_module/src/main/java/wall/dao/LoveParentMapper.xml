@@ -64,7 +64,7 @@
         #{id,jdbcType=BIGINT},
       </if>
       <if test="vo_time != null">
-        UNIX_TIMESTAMP(#{vo_time,jdbcType=INTEGER}),
+        UNIX_TIMESTAMP(#{vo_time}),
       </if>
       <if test="topicId != null">
         #{topicId,jdbcType=BIGINT},
@@ -87,14 +87,14 @@
     </trim>
   </insert>
 
-  <select id="selectByUserId" parameterType="wall.entity.Pageable" resultMap="BaseResultMap">
-    select id, FROM_UNIXTIME(time) as vo_time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit
-    from love_parent where
-     <if test="parentVoPageable.lastId != null">
-        id > #{parentVoPageable.lastId} and
-     </if>
-     user_id = #{parentVoPageable.entity.userId} and is_valid = 1 and is_audit = 2 limit #{parentVoPageable.from},#{parentVoPageable.pageSize}
-  </select>
+  <!--<select id="selectByUserId" parameterType="wall.entity.Pageable" resultMap="BaseResultMap">-->
+    <!--select id, FROM_UNIXTIME(time) as vo_time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit-->
+    <!--from love_parent where-->
+     <!--<if test="parentVoPageable.lastId != null">-->
+        <!--id > #{parentVoPageable.lastId} and-->
+     <!--</if>-->
+     <!--user_id = #{parentVoPageable.entity.userId} and is_valid = 1 and is_audit = 2 limit #{parentVoPageable.from},#{parentVoPageable.pageSize}-->
+  <!--</select>-->
 
 
   <update id="updateByPrimaryKeySelective" parameterType="wall.pojo.LoveParentVo">
@@ -111,18 +111,21 @@
   </update>
 
   <select id="selectByLoveParentVo" parameterType="wall.entity.Pageable" resultMap="BaseResultMap">
-    select id, time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit
+    select id, FROM_UNIXTIME(time) as vo_time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit
     from love_parent where
-    <if test="parentVoPageable.lastId != null">
-      id > #{parentVoPageable.lastId} and
+    <if test="lastId != null">
+      id > #{lastId} and
     </if>
-    <if test="parentVoPageable.entity.start_time != null &amp; parentVoPageable.entity.end_time != null">
-      time between UNIX_TIMESTAMP(#{parentVoPageable.entity.start_time}) and UNIX_TIMESTAMP(#{parentVoPageable.entity.end_time}) and
+    <if test="entity.start_time != null &amp; entity.end_time != null">
+      time between UNIX_TIMESTAMP(#{entity.start_time}) and UNIX_TIMESTAMP(#{entity.end_time}) and
     </if>
-    <if test="parentVoPageable.entity.topic_id != null">
-      topic_id = #{parentVoPageable.entity.topic_id} and
+    <if test="entity.topicId != null">
+      topic_id = #{entity.topicId} and
     </if>
-    is_valid = 1 and is_audit = 2 limit #{parentVoPageable.from},#{parentVoPageable.pageSize}
+    <if test="entity.userId != null">
+      user_id = #{entity.userId} and
+    </if>
+    is_valid = 1 and is_audit = 2 limit #{from},#{pageSize}
   </select>
 
 </mapper>

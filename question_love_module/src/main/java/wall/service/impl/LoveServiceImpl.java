@@ -8,15 +8,16 @@ import wall.dao.LoveSubMapper;
 import wall.entity.Pageable;
 import wall.pojo.LoveParentVo;
 import wall.pojo.LoveSub;
+import wall.service.BaseService;
 import wall.service.LoveService;
 import wall.util.IdWorker;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class LoveServiceImpl implements LoveService {
+public class LoveServiceImpl extends BaseService implements LoveService {
 
 
     @Autowired
@@ -24,7 +25,6 @@ public class LoveServiceImpl implements LoveService {
 
     @Autowired
     private LoveSubMapper loveSubMapper;
-
 
     @Autowired
     private IdWorker idWorker;
@@ -47,34 +47,44 @@ public class LoveServiceImpl implements LoveService {
         return 1;
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public Pageable<LoveParentVo> selectByUserId(Pageable<LoveParentVo> parentVoPageable) {
-        if (parentVoPageable.getEntity().getUserId() == null)
-            throw new RuntimeException();
-        parentVoPageable.setFrom((parentVoPageable.getPageNum() - 1) * parentVoPageable.getPageSize());
-        List<LoveParentVo> loveParentVos = loveParentMapper.selectByUserId(parentVoPageable);
-        parentVoPageable.setRes(loveParentVos);
-        for (LoveParentVo loveParentVo : loveParentVos) {
-            loveParentVo.setLoveSubs(loveSubMapper.selectByParentId(loveParentVo.getId()));
-            // todo：需要调用远程接口获取用户名
-//            loveParentVo.setUserName();
-        }
-        return parentVoPageable;
-    }
+//    @Transactional(readOnly = true)
+//    @Override
+//    public Pageable<LoveParentVo> selectByUserId(Pageable<LoveParentVo> parentVoPageable) {
+//        if (parentVoPageable.getEntity().getUserId() == null)
+//            throw new RuntimeException();
+//        parentVoPageable.setFrom((parentVoPageable.getPageNum() - 1) * parentVoPageable.getPageSize());
+//        List<LoveParentVo> loveParentVos = loveParentMapper.selectByUserId(parentVoPageable);
+//        parentVoPageable.setRes(loveParentVos);
+//        Long lastId = 0L;
+//        for (LoveParentVo loveParentVo : loveParentVos) {
+//            loveParentVo.setLoveSubs(loveSubMapper.selectByParentId(loveParentVo.getId()));
+////            loveParentVo.setUserName();
+//            lastId = Math.max(lastId,loveParentVo.getId());
+//        }
+//        if (lastId != 0)
+//            parentVoPageable.setLastId(lastId);
+//        return parentVoPageable;
+//    }
 
     @Transactional(readOnly = true)
     @Override
-    public Pageable<LoveParentVo> selectList(Pageable<LoveParentVo> parentVoPageable) {
-        parentVoPageable.setFrom((parentVoPageable.getPageNum() - 1) * parentVoPageable.getPageSize());
-        List<LoveParentVo> loveParentVos = loveParentMapper.selectByLoveParentVo(parentVoPageable);
-        parentVoPageable.setRes(loveParentVos);
+    public Pageable<LoveParentVo> selectList(Pageable<LoveParentVo> pageable) {
+        pageable.setFrom((pageable.getPageNum() - 1) * pageable.getPageSize());
+        List<LoveParentVo> loveParentVos = loveParentMapper.selectByLoveParentVo(pageable);
+        pageable.setRes(loveParentVos);
+        Long lastId = 0L;
         for (LoveParentVo loveParentVo : loveParentVos) {
             loveParentVo.setLoveSubs(loveSubMapper.selectByParentId(loveParentVo.getId()));
-            // todo：需要调用远程接口获取用户名
-//            loveParentVo.setUserName();
+            // todo：需要调用远程接口获取用户名。只有实名才需要
+            if (!loveParentVo.getAnonymous()){
+                loveParentVo.setUserName(getUserNameByUserId(loveParentVo.getUserId()));
+            }
+            lastId = Math.max(lastId,loveParentVo.getId());
         }
-        return parentVoPageable;
+        if (lastId != 0)
+            pageable.setLastId(lastId);
+        pageable.setEntity(null);
+        return pageable;
     }
 
 

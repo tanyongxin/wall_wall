@@ -11,4 +11,6 @@ public interface UserTabService {
 
 
     UserTabVo selectUserById(Long id);
+
+    String selectUserNameById(Long id);
 }
