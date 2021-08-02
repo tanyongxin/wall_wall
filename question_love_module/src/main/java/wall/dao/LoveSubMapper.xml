@@ -7,24 +7,20 @@
     <result column="image" jdbcType="VARCHAR" property="image" />
     <result column="parent_id" jdbcType="BIGINT" property="parentId" />
     <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+
   </resultMap>
 
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="wall.pojo.LoveSub">
-    <result column="content" jdbcType="LONGVARCHAR" property="content" />
-  </resultMap>
+  <!--<resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="wall.pojo.LoveSub">-->
+  <!--</resultMap>-->
 
   <sql id="Base_Column_List">
-    id, image, parent_id, type
-  </sql>
-  <sql id="Blob_Column_List">
-    content
+    id, image, parent_id, type,content
   </sql>
 
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
     from love_sub
     where id = #{id,jdbcType=BIGINT}
   </select>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wall.dao.ReportMapper">
+
+  <resultMap id="BaseResultMap" type="wall.pojo.ReportVo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="time" jdbcType="INTEGER" property="time" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="target_id" jdbcType="BIGINT" property="targetId" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="describe" jdbcType="VARCHAR" property="describe" />
+    <result column="audit_res" jdbcType="TINYINT" property="auditRes" />
+    <result column="audit_size" jdbcType="INTEGER" property="auditSize" />
+    <result column="audit_real_size" jdbcType="INTEGER" property="auditRealSize" />
+    <result column="vo_time" jdbcType="VARCHAR" property="vo_time" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, time, user_id, type, target_id, image, describe, audit_res, audit_size, audit_real_size
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    id, FROM_UNIXTIME(time) as vo_time, user_id, type, target_id, image, `describe`, audit_res, audit_size, audit_real_size
+    from report
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <insert id="insertSelective" parameterType="wall.pojo.ReportVo">
+    insert into report
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="vo_time != null">
+        time,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="targetId != null">
+        target_id,
+      </if>
+      <if test="image != null">
+        image,
+      </if>
+      <if test="describe != null">
+        `describe`,
+      </if>
+      <if test="auditRes != null">
+        audit_res,
+      </if>
+      <if test="auditSize != null">
+        audit_size,
+      </if>
+      <if test="auditRealSize != null">
+        audit_real_size,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="vo_time != null">
+        UNIX_TIMESTAMP(#{vo_time,jdbcType=INTEGER}),
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="targetId != null">
+        #{targetId,jdbcType=BIGINT},
+      </if>
+      <if test="image != null">
+        #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="describe != null">
+        #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="auditRes != null">
+        #{auditRes,jdbcType=TINYINT},
+      </if>
+      <if test="auditSize != null">
+        #{auditSize,jdbcType=INTEGER},
+      </if>
+      <if test="auditRealSize != null">
+        #{auditRealSize,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="wall.pojo.ReportVo">
+    update report
+    <set>
+
+      <if test="auditRes != null">
+        audit_res = #{auditRes,jdbcType=TINYINT},
+      </if>
+
+      <if test="auditRealSize != null">
+        audit_real_size = #{auditRealSize,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectReportVosByUserId" parameterType="wall.entity.Pageable" resultMap="BaseResultMap">
+    select id, FROM_UNIXTIME(time) as vo_time, type, target_id, image, `describe`, audit_res, audit_size, audit_real_size
+    from report where
+    <if test="lastId != null">
+      id <![CDATA[ < ]]> #{lastId} and
+    </if>
+    user_id = #{entity} order by time desc limit #{pageSize}
+  </select>
+
+  <select id="selectReportVosByRange" parameterType="map" resultMap="BaseResultMap">
+    select id, FROM_UNIXTIME(time) as vo_time,time, user_id, type, target_id, audit_res, audit_size, audit_real_size
+    from report where id > #{id} limit #{size}
+  </select>
+
+  <select id="selectMinId" resultType="java.lang.Long">
+    select min(id) from report
+  </select>
+
+</mapper>

@@ -20,13 +20,15 @@
     <result column="topic_id" jdbcType="BIGINT" property="topicId" />
     <result column="title" jdbcType="VARCHAR" property="title" />
     <result column="vo_time" jdbcType="VARCHAR" property="vo_time" />
-
+    <result column="like_number" jdbcType="INTEGER" property="like_number" />
+    <result column="school_id" jdbcType="INTEGER" property="school_id" />
+    <result column="type" jdbcType="TINYINT" property="type" />
   </resultMap>
 
   <sql id="Base_Column_List">
     id, user_id, time, to_person, is_anonymous, is_valid, is_audit, content, background_type, 
     background_value, question_background, question_color, question_opacity, topic_id, 
-    title
+    title,like_number,school_id,type
   </sql>
 
 
@@ -34,7 +36,7 @@
     select 
     id, user_id, FROM_UNIXTIME(time) as vo_time, to_person, is_anonymous, is_valid, is_audit, content, background_type,
     background_value, question_background, question_color, question_opacity, topic_id,
-    title
+    title,like_number,school_id,type
     from questions
     where id = #{id,jdbcType=BIGINT}
   </select>
@@ -87,6 +89,12 @@
       <if test="title != null">
         title,
       </if>
+      <if test="school_id != null">
+        school_id,
+      </if>
+      <if test="type != null">
+        type
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -134,12 +142,19 @@
       <if test="title != null">
         #{title,jdbcType=VARCHAR},
       </if>
+      <if test="school_id != null">
+        #{school_id},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=TINYINT},
+      </if>
     </trim>
   </insert>
 
   <update id="updateByPrimaryKeySelective" parameterType="wall.pojo.QuestionsVo">
     update questions
     <set>
+
       <if test="isValid != null">
         is_valid = #{isValid,jdbcType=BIT},
       </if>
@@ -157,10 +172,10 @@
       select
     id, user_id, FROM_UNIXTIME(time) as vo_time, to_person, is_anonymous, is_valid, is_audit, content, background_type,
     background_value, question_background, question_color, question_opacity, topic_id,
-    title
+    title,like_number,school_id,type
     from questions where
     <if test="lastId != null">
-      id > #{lastId} and
+      id <![CDATA[ < ]]> #{lastId} and
     </if>
     <if test="entity.topicId != null">
       topic_id = #{entity.topicId} and
@@ -171,8 +186,30 @@
     <if test="entity.userId != null">
       user_id = #{entity.userId} and
     </if>
-    is_valid = 1 and is_audit = 2 limit #{from},#{pageSize}
+    <if test="entity.school_id != null">
+      school_id = #{entity.school_id} and
+    </if>
+    <if test="entity.type != null">
+      type = #{entity.type} and
+    </if>
+    is_valid = 1 and is_audit = 2 order by time desc limit #{pageSize}
   </select>
 
+  <update id="updateLikeNumberById" parameterType="map">
+    update questions set like_number = like_number + #{count} where id = #{id}
+  </update>
+
+  <update id="deleteQuestion" parameterType="java.lang.Long">
+    update questions set is_valid = 0 where id = #{targetId}
+  </update>
+
+
+  <update id="deleteQuestionByUser" parameterType="map" >
+    update questions set is_valid = 0 where id = #{id} and user_id = #{userId}
+  </update>
+
+  <select id="selectQuestionsIdByRange" parameterType="map" resultType="long">
+    select id from questions where id > #{questionId} limit #{pageSize}
+  </select>
 
 </mapper>

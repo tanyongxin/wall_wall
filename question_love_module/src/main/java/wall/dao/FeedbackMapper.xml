@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wall.dao.FeedbackMapper">
+  <resultMap id="BaseResultMap" type="wall.pojo.Feedback">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="time" jdbcType="INTEGER" property="time" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="suggest" jdbcType="VARCHAR" property="suggest" />
+    <result column="vo_time" jdbcType="VARCHAR" property="vo_time" />
+
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, time, user_id, suggest
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    id, FROM_UNIXTIME(time) as vo_time, user_id, suggest
+    from feedback
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <insert id="insertSelective" parameterType="wall.pojo.Feedback">
+    insert into feedback
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="suggest != null">
+        suggest,
+      </if>
+      <if test="vo_time != null">
+        time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="suggest != null">
+        #{suggest,jdbcType=VARCHAR},
+      </if>
+      <if test="vo_time != null">
+        UNIX_TIMESTAMP(#{vo_time}),
+      </if>
+    </trim>
+  </insert>
+
+
+</mapper>

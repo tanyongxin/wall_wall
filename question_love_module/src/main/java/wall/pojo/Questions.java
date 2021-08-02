@@ -1,20 +1,14 @@
 package wall.pojo;
 
-public class Questions {
+public class Questions extends BasePojo {
 
-    private Long id;
+    private Boolean isAnonymous = true; // 是否匿名，true 表示匿名，false 表示实名
 
-    private Long userId;
+    private Boolean isValid = true; // 是否有效，true 表示有效，false 表示无效。如果后期有用户举报该帖子，并且举报的最终结果为封贴，则 isValid 字段置为 false。如果用户自己删除，则该字段也为 false
 
-    private Integer time;
+    private Byte isAudit ; // 0 表示未审核，1 表示已审核未通过，2 表示已审核已通过。该审核字段表示管理员审核后的结果，如果后期有用户举报该帖子，则 isAudit 字段不会修改。
 
     private String toPerson = "";
-
-    private Boolean isAnonymous = true;
-
-    private Boolean isValid = true;
-
-    private Byte isAudit = 0;
 
     private String content;
 
@@ -32,28 +26,64 @@ public class Questions {
 
     private String title = "";
 
-    public Long getId() {
-        return id;
+    private int like_number = 0; // 点赞数量
+
+    private Integer school_id = 0; // 学校 id
+
+    private Byte type; // 提问类型，0 表示发送到广场（所有人可见），1 表示分享给朋友（仅部分人可见），2 表示既发送到广场也分享给朋友
+
+    public Byte getType() {
+        return type;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Questions setType(Byte type) {
+        this.type = type;
+        return this;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Integer getSchool_id() {
+        return school_id;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public Questions setSchool_id(Integer school_id) {
+        this.school_id = school_id;
+        return this;
     }
 
-    public Integer getTime() {
-        return time;
+    public Boolean getIsAnonymous() {
+        return isAnonymous;
     }
 
-    public void setTime(Integer time) {
-        this.time = time;
+    public BasePojo setIsAnonymous(Boolean anonymous) {
+        isAnonymous = anonymous;
+        return this;
+    }
+
+    public Boolean getIsValid() {
+        return isValid;
+    }
+
+    public BasePojo setIsValid(Boolean valid) {
+        isValid = valid;
+        return this;
+    }
+
+    public Byte getIsAudit() {
+        return isAudit;
+    }
+
+    public BasePojo setIsAudit(Byte isAudit) {
+        this.isAudit = isAudit;
+        return this;
+    }
+
+    public int getLike_number() {
+        return like_number;
+    }
+
+    public Questions setLike_number(int like_number) {
+        this.like_number = like_number;
+        return this;
     }
 
     public String getToPerson() {
@@ -64,29 +94,6 @@ public class Questions {
         this.toPerson = toPerson == null ? null : toPerson.trim();
     }
 
-    public Boolean getIsAnonymous() {
-        return isAnonymous;
-    }
-
-    public void setIsAnonymous(Boolean isAnonymous) {
-        this.isAnonymous = isAnonymous;
-    }
-
-    public Boolean getIsValid() {
-        return isValid;
-    }
-
-    public void setIsValid(Boolean isValid) {
-        this.isValid = isValid;
-    }
-
-    public Byte getIsAudit() {
-        return isAudit;
-    }
-
-    public void setIsAudit(Byte isAudit) {
-        this.isAudit = isAudit;
-    }
 
     public String getContent() {
         return content;
@@ -150,5 +157,27 @@ public class Questions {
 
     public void setTitle(String title) {
         this.title = title == null ? null : title.trim();
+    }
+
+    @Override
+    public String toString() {
+        return "Questions{" +
+                super.toString() +
+                "isAnonymous=" + isAnonymous +
+                ", isValid=" + isValid +
+                ", isAudit=" + isAudit +
+                ", toPerson='" + toPerson + '\'' +
+                ", content='" + content + '\'' +
+                ", backgroundType=" + backgroundType +
+                ", backgroundValue='" + backgroundValue + '\'' +
+                ", questionBackground='" + questionBackground + '\'' +
+                ", questionColor='" + questionColor + '\'' +
+                ", questionOpacity='" + questionOpacity + '\'' +
+                ", topicId=" + topicId +
+                ", title='" + title + '\'' +
+                ", like_number=" + like_number +
+                ", school_id=" + school_id +
+                ", type=" + type +
+                '}';
     }
 }

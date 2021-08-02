@@ -55,8 +55,10 @@ public class OssServiceImpl implements OssService {
         // 存储目录
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
         String dir ;
-        if (type == 1) dir = aliyun_oss_dir_prefix1 + sdf.format(new Date());
-        else dir = aliyun_oss_dir_prefix2 + sdf.format(new Date());
+        if (type == 1)
+            dir = aliyun_oss_dir_prefix1 + sdf.format(new Date());
+        else
+            dir = aliyun_oss_dir_prefix2 + sdf.format(new Date());
         String fileName = UUID.randomUUID().toString().replace("-","");
         // 签名有效期
         long expireEndTime = System.currentTimeMillis() + ALIYUN_OSS_EXPIRE * 1000;

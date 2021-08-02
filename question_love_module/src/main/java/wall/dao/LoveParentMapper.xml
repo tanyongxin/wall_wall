@@ -3,6 +3,7 @@
 <mapper namespace="wall.dao.LoveParentMapper">
 
   <resultMap id="BaseResultMap" type="wall.pojo.LoveParentVo">
+
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="time" jdbcType="INTEGER" property="time" />
     <result column="topic_id" jdbcType="BIGINT" property="topicId" />
@@ -12,20 +13,17 @@
     <result column="is_valid" jdbcType="BIT" property="isValid" />
     <result column="is_audit" jdbcType="TINYINT" property="isAudit" />
     <result column="vo_time" jdbcType="VARCHAR" property="vo_time" />
+    <result column="like_number" jdbcType="INTEGER" property="like_number" />
+    <result column="school_id" jdbcType="INTEGER" property="school_id" />
   </resultMap>
 
   <sql id="Base_Column_List">
-    id, time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit
+    id, time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit,like_number,school_id
   </sql>
-
-  <!--<sql id="ext_Column_List">-->
-    <!--id, time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit-->
-  <!--</sql>-->
-
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
-    id, FROM_UNIXTIME(time) as vo_time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit
+    id, FROM_UNIXTIME(time) as vo_time,time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit,like_number,school_id
     from love_parent
     where id = #{id,jdbcType=BIGINT}
   </select>
@@ -58,6 +56,9 @@
       <if test="isAudit != null">
         is_audit,
       </if>
+      <if test="school_id != null">
+        school_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -84,16 +85,19 @@
       <if test="isAudit != null">
         #{isAudit,jdbcType=TINYINT},
       </if>
+      <if test="school_id != null">
+        #{school_id}
+      </if>
     </trim>
   </insert>
 
   <!--<select id="selectByUserId" parameterType="wall.entity.Pageable" resultMap="BaseResultMap">-->
-    <!--select id, FROM_UNIXTIME(time) as vo_time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit-->
-    <!--from love_parent where-->
-     <!--<if test="parentVoPageable.lastId != null">-->
-        <!--id > #{parentVoPageable.lastId} and-->
-     <!--</if>-->
-     <!--user_id = #{parentVoPageable.entity.userId} and is_valid = 1 and is_audit = 2 limit #{parentVoPageable.from},#{parentVoPageable.pageSize}-->
+  <!--select id, FROM_UNIXTIME(time) as vo_time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit-->
+  <!--from love_parent where-->
+  <!--<if test="parentVoPageable.lastId != null">-->
+  <!--id > #{parentVoPageable.lastId} and-->
+  <!--</if>-->
+  <!--user_id = #{parentVoPageable.entity.userId} and is_valid = 1 and is_audit = 2 limit #{parentVoPageable.from},#{parentVoPageable.pageSize}-->
   <!--</select>-->
 
 
@@ -111,10 +115,10 @@
   </update>
 
   <select id="selectByLoveParentVo" parameterType="wall.entity.Pageable" resultMap="BaseResultMap">
-    select id, FROM_UNIXTIME(time) as vo_time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit
+    select id, FROM_UNIXTIME(time) as vo_time, topic_id, to_person, user_id, is_anonymous, is_valid, is_audit,like_number
     from love_parent where
     <if test="lastId != null">
-      id > #{lastId} and
+      id <![CDATA[ < ]]> #{lastId} and
     </if>
     <if test="entity.start_time != null &amp; entity.end_time != null">
       time between UNIX_TIMESTAMP(#{entity.start_time}) and UNIX_TIMESTAMP(#{entity.end_time}) and
@@ -125,7 +129,26 @@
     <if test="entity.userId != null">
       user_id = #{entity.userId} and
     </if>
-    is_valid = 1 and is_audit = 2 limit #{from},#{pageSize}
+    <if test="entity.school_id != null">
+      school_id = #{entity.school_id} and
+    </if>
+    is_valid = 1 and is_audit = 2 order by time desc limit #{pageSize}
+  </select>
+
+  <update id="updateLikeNumberById" parameterType="map">
+    update love_parent set like_number = like_number + #{count} where id = #{id}
+  </update>
+
+  <update id="deleteLove" parameterType="java.lang.Long">
+    update love_parent set is_valid = 0 where id = #{targetId}
+  </update>
+
+  <update id="deleteLoveByUser" parameterType="map" >
+    update love_parent set is_valid = 0 where id = #{id} and user_id = #{userId}
+  </update>
+
+  <select id="selectLovesIdByRange" parameterType="map" resultType="long">
+    select id from love_parent where id > #{loveParentId} limit #{pageSize}
   </select>
 
 </mapper>

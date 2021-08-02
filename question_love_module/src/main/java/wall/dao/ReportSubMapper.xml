@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wall.dao.ReportSubMapper">
+
+  <resultMap id="BaseResultMap" type="wall.pojo.ReportSub">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="parent_id" jdbcType="BIGINT" property="parentId" />
+    <result column="audit_res" jdbcType="TINYINT" property="auditRes" />
+    <result column="time" jdbcType="INTEGER" property="time" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="is_valid" jdbcType="TINYINT" property="isValid" />
+    <result column="vo_time" jdbcType="VARCHAR" property="vo_time" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, parent_id, audit_res, time, user_id, is_valid
+  </sql>
+
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    id, parent_id, audit_res, FROM_UNIXTIME(time) as vo_time,time , user_id, is_valid
+    from report_sub
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+
+  <insert id="insertSelective" parameterType="wall.pojo.ReportSub">
+    insert into report_sub
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="parentId != null">
+        parent_id,
+      </if>
+      <if test="auditRes != null">
+        audit_res,
+      </if>
+      <if test="vo_time != null">
+        time,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="isValid != null">
+        is_valid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="parentId != null">
+        #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="auditRes != null">
+        #{auditRes,jdbcType=TINYINT},
+      </if>
+      <if test="vo_time != null">
+        UNIX_TIMESTAMP(#{vo_time,jdbcType=INTEGER}),
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="isValid != null">
+        #{isValid,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+
+
+  <update id="updateByPrimaryKeySelective" parameterType="wall.pojo.ReportSub">
+    update report_sub
+    <set>
+      <if test="auditRes != null">
+        audit_res = #{auditRes,jdbcType=TINYINT},
+      </if>
+      <if test="vo_time != null">
+        time = UNIX_TIMESTAMP(#{vo_time,jdbcType=INTEGER}),
+      </if>
+      <if test="isValid != null">
+        is_valid = #{isValid,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectOverdueReportSub" parameterType="map" resultMap="BaseResultMap">
+    select id, parent_id, audit_res,user_id from report_sub where id > #{id} and time <![CDATA[<=]]> UNIX_TIMESTAMP(#{currTime}) - #{threshold} and audit_res = 0 limit #{pageSize}
+  </select>
+
+  <update id="invalidReportSubByParentId" parameterType="java.lang.Long" >
+      update report_sub set is_valid = 0 where parent_id = #{parentId}
+  </update>
+
+  <select id="selectByParentId" parameterType="long" resultMap="BaseResultMap">
+    select id, parent_id, audit_res, FROM_UNIXTIME(time) as vo_time, user_id, is_valid
+    from report_sub where parent_id = #{parentId}
+  </select>
+
+  <select id="selectByUserId" parameterType="wall.entity.Pageable" resultMap="BaseResultMap">
+    select id, parent_id, audit_res, FROM_UNIXTIME(time) as vo_time, user_id, is_valid
+    from report_sub where user_id = #{entity} order by time desc limit #{from},#{pageSize}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, parent_id, audit_res, FROM_UNIXTIME(time) as vo_time, user_id, is_valid from report_sub
+  </select>
+
+  <select id="selectMinId" resultType="java.lang.Long">
+    select min(id) from report_sub
+  </select>
+</mapper>

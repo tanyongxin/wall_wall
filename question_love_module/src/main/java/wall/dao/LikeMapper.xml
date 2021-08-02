@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wall.dao.LikeMapper">
+
+  <resultMap id="BaseResultMap" type="wall.pojo.LikeVo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="time" jdbcType="INTEGER" property="time" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="target_id" jdbcType="BIGINT" property="targetId" />
+    <result column="isLike" jdbcType="BIT" property="isLike" />
+    <result column="update_time" jdbcType="VARCHAR" property="update_time" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, user_id, time, type, target_id, isLike
+  </sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, user_id, FROM_UNIXTIME(time) as update_time, type, target_id, isLike
+    from like_tab
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <insert id="insertSelective" parameterType="wall.pojo.LikeVo">
+    insert into like_tab
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="update_time != null">
+        time,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="targetId != null">
+        target_id,
+      </if>
+      <if test="isLike != null">
+        isLike,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="update_time != null">
+        UNIX_TIMESTAMP(#{update_time,jdbcType=INTEGER}),
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="targetId != null">
+        #{targetId,jdbcType=BIGINT},
+      </if>
+      <if test="isLike != null">
+        #{isLike,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="cancelLike" parameterType="map">
+    update like_tab set isLike = 0 where id = #{id,jdbcType=BIGINT} and user_id = #{userId}
+  </update>
+
+  <update id="like" parameterType="map">
+    update like_tab set isLike = 1 where id = #{id,jdbcType=BIGINT} and user_id = #{userId}
+  </update>
+
+
+  <select id="selectIsLikeByUerIdAndTypeAndTargetIId" parameterType="map" resultMap="BaseResultMap">
+    select user_id,isLike,id,type from like_tab where user_id = #{userId} and target_id = #{targetId}
+  </select>
+
+  <select id="selectLikeVosByUserId" parameterType="wall.entity.Pageable" resultMap="BaseResultMap">
+    select id, user_id, FROM_UNIXTIME(time) as update_time, type, target_id from like_tab where
+    <if test="lastId != null">
+      id <![CDATA[ < ]]> #{lastId} and
+    </if>
+      user_id = #{entity} and isLike = 1 order by time desc limit #{pageSize}
+  </select>
+
+  <select id="selectLikeCountByTypeAndTargetIId" parameterType="map" resultType="java.lang.Integer">
+    select count(*) from like_tab where target_id = #{targetId} and isLike = 1
+  </select>
+
+
+</mapper>

@@ -12,12 +12,25 @@ public class LoveSub {
 
     private String content = ""; // 内容
 
+    private String vo_id;
+
+    public String getVo_id() {
+        return vo_id;
+    }
+
+    public LoveSub setVo_id(String vo_id) {
+        this.vo_id = vo_id;
+        this.id = Long.parseLong(vo_id);
+        return this;
+    }
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+        this.vo_id = id + "";
     }
 
     public String getImage() {

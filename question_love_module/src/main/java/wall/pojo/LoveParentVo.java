@@ -5,10 +5,20 @@ import java.util.List;
 public class LoveParentVo extends LoveParent {
 
     private String vo_time; // 发表时间，前端展示
-    private List<LoveSub> loveSubs;
-    private String userName; // 发表人的用户名
+    private List<LoveSub> loveSubs; // 子表数据集合
     private String start_time; // 开始时间，用于封装查询条件
     private String end_time; // 结束时间，用于封装查询条件
+    private LikeVo like; // 该表白的点赞情况
+
+
+    public LikeVo getLike() {
+        return like;
+    }
+
+    public LoveParentVo setLike(LikeVo like) {
+        this.like = like;
+        return this;
+    }
 
     private String topicName; // 所属话题的名称
 
@@ -40,15 +50,6 @@ public class LoveParentVo extends LoveParent {
         return this;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public LoveParentVo setUserName(String userName) {
-        this.userName = userName;
-        return this;
-    }
-
     public String getVo_time() {
         return vo_time;
     }
@@ -69,11 +70,10 @@ public class LoveParentVo extends LoveParent {
 
     @Override
     public String toString() {
-        System.out.println(super.toString());
         return "LoveParentVo{" +
+                super.toString() +
                 "vo_time='" + vo_time + '\'' +
                 ", loveSubs=" + loveSubs +
-                ", userName='" + userName + '\'' +
                 ", start_time='" + start_time + '\'' +
                 ", end_time='" + end_time + '\'' +
                 '}';

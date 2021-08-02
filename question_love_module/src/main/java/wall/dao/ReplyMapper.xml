@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="wall.dao.ReplyMapper">
+
+  <resultMap id="BaseResultMap" type="wall.pojo.ReplyVo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="time" jdbcType="INTEGER" property="time" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="target_id" jdbcType="BIGINT" property="targetId" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="is_valid" jdbcType="BIT" property="isValid" />
+    <result column="is_audit" jdbcType="TINYINT" property="isAudit" />
+    <result column="is_anonymous" jdbcType="BIT" property="isAnonymous" />
+    <result column="vo_time" jdbcType="VARCHAR" property="vo_time" />
+    <result column="like_number" jdbcType="INTEGER" property="like_number" />
+    <result column="post_id" jdbcType="BIGINT" property="post_id" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, time, content, user_id, target_id, type, is_valid, is_audit, is_anonymous,like_number,post_id
+  </sql>
+
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    id, FROM_UNIXTIME(time) as vo_time, content, user_id, target_id, type, is_valid, is_audit, is_anonymous,like_number,post_id
+    from reply
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <insert id="insertSelective" parameterType="wall.pojo.ReplyVo">
+    insert into reply
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="vo_time != null">
+        time,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="targetId != null">
+        target_id,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="isValid != null">
+        is_valid,
+      </if>
+      <if test="isAudit != null">
+        is_audit,
+      </if>
+      <if test="isAnonymous != null">
+        is_anonymous,
+      </if>
+      <if test="post_id != null">
+        post_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="vo_time != null">
+        UNIX_TIMESTAMP(#{vo_time,jdbcType=INTEGER}),
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="targetId != null">
+        #{targetId,jdbcType=BIGINT},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="isValid != null">
+        #{isValid,jdbcType=BIT},
+      </if>
+      <if test="isAudit != null">
+        #{isAudit,jdbcType=TINYINT},
+      </if>
+      <if test="isAnonymous != null">
+        #{isAnonymous,jdbcType=BIT},
+      </if>
+      <if test="post_id != null">
+        #{post_id,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+
+
+  <update id="updateByPrimaryKeySelective" parameterType="wall.pojo.ReplyVo">
+    update reply
+    <set>
+      <if test="isValid != null">
+        is_valid = #{isValid,jdbcType=BIT},
+      </if>
+      <if test="isAudit != null">
+        is_audit = #{isAudit,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByTypeAndTargetId" parameterType="map" resultMap="BaseResultMap">
+    select
+    id, FROM_UNIXTIME(time) as vo_time, content, user_id, target_id, type, is_valid, is_audit, is_anonymous,like_number,post_id
+    from reply where target_id = #{targetId} and is_valid = 1 and is_audit = 2 order by time desc limit 5
+  </select>
+
+  <select id="selectList" parameterType="wall.entity.Pageable" resultMap="BaseResultMap">
+    select
+    id, FROM_UNIXTIME(time) as vo_time, content, user_id, target_id, type, is_valid, is_audit, is_anonymous,like_number,post_id
+    from reply where
+    <if test="lastId != null">
+      id <![CDATA[ < ]]> #{lastId} and
+    </if>
+    target_id = #{entity.targetId} and is_valid = 1 and is_audit = 2 order by time desc limit #{pageSize}
+  </select>
+
+  <update id="updateLikeNumberById" parameterType="map">
+    update reply set like_number = like_number + #{count} where id = #{id}
+  </update>
+
+  <select id="selectReplysIdByRange" parameterType="map" resultType="long">
+    select id from reply where id > #{replyId} limit #{pageSize}
+  </select>
+
+  <update id="deleteReply" parameterType="java.lang.Long">
+    update reply set is_valid = 0 where id = #{targetId}
+  </update>
+
+  <select id="count" parameterType="java.lang.Long" resultType="int">
+    select count(*) from reply where target_id = #{targetId}
+  </select>
+
+  <update id="deleteReplyByUser" parameterType="map" >
+    update reply set is_valid = 0 where id = #{id} and user_id = #{userId}
+  </update>
+
+</mapper>

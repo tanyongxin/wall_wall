@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wall.dao.MessageMapper">
+  <resultMap id="BaseResultMap" type="wall.pojo.MessageVo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="target_id" jdbcType="BIGINT" property="targetId" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="time" jdbcType="INTEGER" property="time" />
+    <result column="send_user_id" jdbcType="BIGINT" property="sendUserId" />
+    <result column="is_view" jdbcType="BIT" property="isView" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, target_id, type, user_id, time,send_user_id,is_view
+  </sql>
+
+
+  <!--<select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">-->
+  <!--select -->
+  <!--<include refid="Base_Column_List" />-->
+  <!--from message-->
+  <!--where id = #{id,jdbcType=BIGINT}-->
+  <!--</select>-->
+
+  <insert id="insertSelective" parameterType="wall.pojo.MessageVo">
+    insert into message
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="targetId != null">
+        target_id,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="vo_time != null">
+        time,
+      </if>
+      <if test="sendUserId != null">
+        send_user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="targetId != null">
+        #{targetId,jdbcType=BIGINT},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="vo_time != null">
+        UNIX_TIMESTAMP(#{vo_time,jdbcType=INTEGER}),
+      </if>
+      <if test="sendUserId != null">
+        #{sendUserId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectMessageVos" parameterType="wall.entity.Pageable" resultMap="BaseResultMap">
+    select id, target_id, type, user_id, FROM_UNIXTIME(time) as vo_time,send_user_id,is_view from message
+    where
+    <if test="lastId != null">
+      id <![CDATA[ < ]]> #{lastId} and
+    </if>
+    <if test="entity.userId != null">
+      user_id = #{entity.userId}
+    </if>
+    <if test="entity.type != null">
+      and type = #{entity.type}
+    </if>
+    order by time desc limit #{pageSize}
+  </select>
+
+  <update id="view" parameterType="long" >
+      update message set is_view = 1 where id = #{id}
+ </update>
+
+  <select id="selectCountByUserId" parameterType="java.lang.Long" resultType="int">
+    select count(*) from message where user_id = #{userId} and is_view = 0
+  </select>
+
+</mapper>
