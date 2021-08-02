@@ -1,8 +1,8 @@
 package wall.pojo;
 
-public class UserTab {
+public class UserTab extends BasePojo{
 
-    private Long id;
+    private String avatars; // 用户头像
 
     private String wxName;
 
@@ -20,12 +20,32 @@ public class UserTab {
 
     private String wxNum; // 用户微信号
 
+    public String getAvatars() {
+        return avatars;
+    }
+
+    public UserTab setAvatars(String avatars) {
+        this.avatars = avatars;
+        return this;
+    }
+
+    public String getVo_id() {
+        return vo_id;
+    }
+
+    public UserTab setVo_id(String vo_id) {
+        this.vo_id = vo_id;
+        this.id = Long.parseLong(vo_id);
+        return this;
+    }
+
     public Long getId() {
         return id;
     }
 
     public UserTab setId(Long id) {
         this.id = id;
+        this.vo_id = id + "";
         return this;
     }
 
@@ -99,5 +119,21 @@ public class UserTab {
     public UserTab setWxNum(String wxNum) {
         this.wxNum = wxNum;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "UserTab{" +
+                "id=" + id +
+                ", wxName='" + wxName + '\'' +
+                ", oppenId='" + oppenId + '\'' +
+                ", sex='" + sex + '\'' +
+                ", identity=" + identity +
+                ", schoolId=" + schoolId +
+                ", joinTime=" + joinTime +
+                ", isVip=" + isVip +
+                ", wxNum='" + wxNum + '\'' +
+                ", vo_id='" + vo_id + '\'' +
+                '}';
     }
 }

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wall.dao.UserShareMapper">
+
+  <resultMap id="BaseResultMap" type="wall.pojo.UserShare">
+
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="time" jdbcType="INTEGER" property="time" />
+    <result column="request_url" jdbcType="VARCHAR" property="requestUrl" />
+    <result column="page" jdbcType="VARCHAR" property="page" />
+    <result column="code_url" jdbcType="VARCHAR" property="codeUrl" />
+    <result column="vo_time" jdbcType="VARCHAR" property="vo_time" />
+
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, user_id, time, request_url, page, code_url
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    id, user_id, FROM_UNIXTIME(time) as vo_time, request_url, page, code_url
+    from user_share
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <insert id="insertSelective" parameterType="wall.pojo.UserShare">
+    insert into user_share
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="vo_time != null">
+        time,
+      </if>
+      <if test="requestUrl != null">
+        request_url,
+      </if>
+      <if test="page != null">
+        page,
+      </if>
+      <if test="codeUrl != null">
+        code_url,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="vo_time != null">
+        UNIX_TIMESTAMP(#{vo_time,jdbcType=INTEGER}),
+      </if>
+      <if test="requestUrl != null">
+        #{requestUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="page != null">
+        #{page,jdbcType=VARCHAR},
+      </if>
+      <if test="codeUrl != null">
+        #{codeUrl,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectByUserId" parameterType="wall.entity.Pageable" resultMap="BaseResultMap">
+    select
+    id, user_id, FROM_UNIXTIME(time) as vo_time, request_url, page, code_url
+    from user_share where
+    <if test="lastId != null">
+      id > #{lastId} and
+    </if>
+    user_id = #{entity} order by time desc limit #{from},#{pageSize}
+  </select>
+
+  <update id="updateCodeUrlById" parameterType="map">
+    update user_share set code_url = #{codeUrl} where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+
+</mapper>

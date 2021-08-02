@@ -1,5 +1,7 @@
 package wall.service.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -16,11 +18,17 @@ import wall.util.WXLoginUtil;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserTabServiceImpl implements UserTabService {
 
+
+
+    Logger logger = LoggerFactory.getLogger(UserTabServiceImpl.class);
 
     @Autowired
     private UserTabMapper userTabMapper;
@@ -45,7 +53,7 @@ public class UserTabServiceImpl implements UserTabService {
      */
     @Transactional
     @Override
-    public UserTabVo smallProgramLogin(String code, String wxName) {
+    public UserTabVo smallProgramLogin(String code, String wxName,String avatars) {
         WXLoginUtil wxLoginUtil = HttpClientUtils.
                 httpClientUtils("https://api.weixin.qq.com/sns/jscode2session?appid=" + APPID + "&secret=" + SECRET + "&js_code=" + code + "&grant_type=authorization_code", WXLoginUtil.class);
         if (wxLoginUtil == null)
@@ -60,20 +68,23 @@ public class UserTabServiceImpl implements UserTabService {
                     .setWxName(wxName)
                     .setIdentity(IdentityEnum.STUDENTS)
                     .setWxNum(ConstantUtil.UNKNOWN)
-                    .setSex(ConstantUtil.UNKNOWN);
+                    .setSex(ConstantUtil.UNKNOWN).setAvatars(avatars);
             userTab.setVo_join_time(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             int res = userTabMapper.insertSelective(userTab);
             if (res != 1)
                 throw new RuntimeException();
+//            logger.info("xxxx");
         }
         // 如果用户的微信名改了，数据库中也要修改
-        if (!userTab.getWxName().equals(wxName)){
+        if (!userTab.getWxName().equals(wxName) || !userTab.getAvatars().equals(avatars)){
             userTab.setWxName(wxName);
+            userTab.setAvatars(avatars);
             updateUserTab(userTab);
         }
         userTab.setSession_key(session_key);
+        logger.info("userTab : " + userTab);
         // 设置 30 分钟的超时时间
-        redisTemplate.opsForValue().set(session_key,oppen_id,30, TimeUnit.MINUTES);
+//        redisTemplate.opsForValue().set(session_key,oppen_id,30, TimeUnit.MINUTES);
         return userTab;
     }
 
@@ -95,6 +106,15 @@ public class UserTabServiceImpl implements UserTabService {
     @Override
     public String selectUserNameById(Long id) {
         return userTabMapper.selectUserNameById(id);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Long> selectUserIds(int size) {
+        Long maxId = userTabMapper.selectMaxId();
+        Long minId = userTabMapper.selectMinId();
+        Long random = userTabMapper.selectRandom(maxId, minId);
+        return userTabMapper.selectUserIds(size,random);
     }
 
 }

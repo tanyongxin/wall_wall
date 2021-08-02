@@ -139,6 +139,16 @@
                 </includes>
                 <filtering>true</filtering>
             </resource>
+
+            <!-- 将 resources 下的配置文件打包进 jar 包中-->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>*.properties</include>
+                </includes>
+            </resource>
         </resources>
 
     </build>

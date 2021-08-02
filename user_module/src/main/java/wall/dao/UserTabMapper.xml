@@ -13,14 +13,15 @@
     <result column="is_vip" jdbcType="BIT" property="isVip" />
     <result column="wx_num" jdbcType="VARCHAR" property="wxNum" />
     <result column="vo_join_time" jdbcType="VARCHAR" property="vo_join_time" />
+    <result column="avatars" jdbcType="VARCHAR" property="avatars" />
   </resultMap>
 
   <sql id="Base_Column_List">
-    id, wx_name, oppen_id, sex, identity, school_id, join_time, is_vip, wx_num
+    id, wx_name, oppen_id, sex, identity, school_id, join_time, is_vip, wx_num,avatars
   </sql>
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select id, wx_name, oppen_id, sex, identity, school_id, FROM_UNIXTIME(join_time) as vo_join_time,is_vip, wx_num
+    select id, wx_name, oppen_id, sex, identity, school_id, FROM_UNIXTIME(join_time) as vo_join_time,is_vip, wx_num,avatars
     from user_tab
     where id = #{id,jdbcType=BIGINT}
   </select>
@@ -55,6 +56,9 @@
       <if test="wxNum != null">
         wx_num,
       </if>
+      <if test="avatars != null">
+        avatars,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -84,6 +88,9 @@
       <if test="wxNum != null">
         #{wxNum,jdbcType=VARCHAR},
       </if>
+      <if test="avatars != null">
+        #{avatars,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
 
@@ -105,17 +112,36 @@
       <if test="wxNum != null">
         wx_num = #{wxNum,jdbcType=VARCHAR},
       </if>
+      <if test="avatars != null">
+        avatars = #{avatars,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
 
   <select id="selectUserTabByOppen_id" parameterType="string" resultMap="BaseResultMap">
-    select id, wx_name, oppen_id, sex, identity, school_id, FROM_UNIXTIME(join_time) as vo_join_time,is_vip, wx_num
+    select id, wx_name, oppen_id, sex, identity, school_id, FROM_UNIXTIME(join_time) as vo_join_time,is_vip, wx_num,avatars
     from user_tab where oppen_id = #{oppen_id}
   </select>
 
   <select id="selectUserNameById" parameterType="long" resultType="string">
     select wx_name from user_tab where id = #{id}
+  </select>
+
+  <select id="selectMaxId" resultType="long">
+    select max(id) from user_tab
+  </select>
+
+  <select id="selectMinId" resultType="long">
+    select min(id) from user_tab
+  </select>
+
+  <select id="selectUserIds" parameterType="map" resultType="long">
+    select id from user_tab where id >= #{id} limit #{size}
+  </select>
+
+  <select id="selectRandom" parameterType="map" resultType="long">
+    select FLOOR( ( (#{maxId} - #{minId} + 1) * RAND() ) + #{minId})
   </select>
 
 </mapper>
