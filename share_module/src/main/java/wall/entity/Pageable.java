@@ -3,7 +3,7 @@ package wall.entity;
 import java.util.List;
 
 // 分页的实体类
-public class Pageable<T> {
+public class Pageable<T,R> {
 
     private T entity; // 封装查询条件的实体类
 
@@ -11,7 +11,7 @@ public class Pageable<T> {
 
     private int pageNum = 1; // 当前页数
 
-    private List<T> res; // 结果集
+    private List<R> res; // 结果集
 
     private Long lastId; // 上一页最后一条记录的 id 值
 
@@ -21,7 +21,7 @@ public class Pageable<T> {
         return from;
     }
 
-    public Pageable<T> setFrom(Integer from) {
+    public Pageable<T,R> setFrom(Integer from) {
         this.from = from;
         return this;
     }
@@ -30,7 +30,7 @@ public class Pageable<T> {
         return lastId;
     }
 
-    public Pageable<T> setLastId(long lastId) {
+    public Pageable<T,R> setLastId(long lastId) {
         this.lastId = lastId;
         return this;
     }
@@ -39,7 +39,7 @@ public class Pageable<T> {
         return entity;
     }
 
-    public Pageable<T> setEntity(T entity) {
+    public Pageable<T,R> setEntity(T entity) {
         this.entity = entity;
         return this;
     }
@@ -48,7 +48,7 @@ public class Pageable<T> {
         return pageSize;
     }
 
-    public Pageable<T> setPageSize(int pageSize) {
+    public Pageable<T,R> setPageSize(int pageSize) {
         this.pageSize = pageSize;
         return this;
     }
@@ -57,17 +57,27 @@ public class Pageable<T> {
         return pageNum;
     }
 
-    public Pageable<T> setPageNum(int pageNum) {
+    public Pageable<T,R> setPageNum(int pageNum) {
         this.pageNum = pageNum;
         return this;
     }
 
-    public List<T> getRes() {
+    public List<R> getRes() {
         return res;
     }
 
-    public Pageable<T> setRes(List<T> res) {
+    public Pageable<T,R> setRes(List<R> res) {
         this.res = res;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Pageable{" +
+                "entity=" + entity +
+                ", pageSize=" + pageSize +
+                ", res=" + res +
+                ", lastId=" + lastId +
+                '}';
     }
 }

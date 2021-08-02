@@ -21,9 +21,8 @@ import java.util.Arrays;
 public class WallAop {
 
 
-
-    @Autowired
-    private StringRedisTemplate redisTemplate;
+//    @Autowired
+//    private StringRedisTemplate redisTemplate;
 
 
     Logger logger = LoggerFactory.getLogger(WallAop.class);
@@ -39,16 +38,19 @@ public class WallAop {
 
     @Around(value = "ordinaryPointcut()")
     public Res<?> aroundPointcut2(JoinPoint joinPoint) {
+        long startTime = System.currentTimeMillis();
         MethodInvocationProceedingJoinPoint methodInvocationProceedingJoinPoint = (MethodInvocationProceedingJoinPoint) joinPoint;
-        logger.info("原始参数: " + Arrays.toString(joinPoint.getArgs()));
+        logger.info("original param: " + Arrays.toString(joinPoint.getArgs()));
         Res<?> proceed = new Res<>(StateCode.OPERATION_FAILURE);
-        logger.info(" 调用 " + methodInvocationProceedingJoinPoint.getSignature().getName());
+        logger.info(" invoke " + methodInvocationProceedingJoinPoint.getSignature().getName());
         try {
             proceed = (Res<?>) methodInvocationProceedingJoinPoint.proceed(joinPoint.getArgs());
         }catch (Throwable throwable){
             throwable.printStackTrace();
             logger.error(throwable.getMessage());
         }
+        long endTime = System.currentTimeMillis();
+        logger.info("finish ： " + (endTime - startTime) + " ms");
         return proceed;
     }
 
@@ -56,7 +58,7 @@ public class WallAop {
     @Around(value = "checkLoginPointcut()")
     public Res<?> aroundPointcut1(JoinPoint joinPoint) {
         MethodInvocationProceedingJoinPoint methodInvocationProceedingJoinPoint = (MethodInvocationProceedingJoinPoint) joinPoint;
-        logger.info("原始参数: " + Arrays.toString(joinPoint.getArgs()));
+        logger.info("original param: " + Arrays.toString(joinPoint.getArgs()));
         Res<?> proceed = new Res<>(StateCode.OPERATION_FAILURE);
         BindingResult bindingResult = null;
         String session_key = null;
@@ -66,19 +68,22 @@ public class WallAop {
             if (joinPoint.getArgs()[i] instanceof BindingResult)
                 bindingResult = (BindingResult) joinPoint.getArgs()[i];
         }
-//        if ( session_key == null )
-//            return new Res<>(StateCode.NOTLOGGEDIN);
+        if ( session_key == null )
+            return new Res<>(StateCode.NOTLOGGEDIN);
 //        if (redisTemplate.opsForValue().get(session_key) == null)
 //            return new Res<>(StateCode.TOKENEXPIRE);
         if (bindingResult != null && bindingResult.hasErrors())
             return new Res<>(StateCode.INVALIDPARAMETER);
-        logger.info(" 调用 " + methodInvocationProceedingJoinPoint.getSignature().getName());
+        logger.info(" invoke " + methodInvocationProceedingJoinPoint.getSignature().getDeclaringTypeName() + " " + methodInvocationProceedingJoinPoint.getSignature().getName());
+        long startTime = System.currentTimeMillis();
         try {
             proceed = (Res<?>) methodInvocationProceedingJoinPoint.proceed(joinPoint.getArgs());
         }catch (Throwable throwable){
             throwable.printStackTrace();
             logger.error(throwable.getMessage());
         }
+        long endTime = System.currentTimeMillis();
+        logger.info("finish ： " + (endTime - startTime) + " ms");
         return proceed;
     }
 }
